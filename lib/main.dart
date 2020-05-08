@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -56,21 +57,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    _timeString = _formatTimeOfDay(TimeOfDay.now());
+    _timeString = _formatTimeOfDay(DateTime.now());
     //Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
     super.initState();
   }
 
   void _updateDate() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      Future<TimeOfDay> timeOfDay = showTimePicker(context: context, initialTime: new TimeOfDay(hour:14, minute: 20));
-      timeOfDay.then((value) => _timeString = _formatTimeOfDay((value)));
-    });
+
+      DateTime now = DateTime.now();
+      Future<TimeOfDay> timeOfDay = showTimePicker(context: context, initialTime: new TimeOfDay(hour: now.hour, minute: now.minute));
+      timeOfDay.then((value) =>
+      {
+        setState(() {
+          // This call to setState tells the Flutter framework that something has
+          // changed in this State, which causes it to rerun the build method below
+          // so that the display can reflect the updated values. If we changed
+          // _counter without calling setState(), then the build method would not be
+          // called again, and so nothing would appear to happen.
+          _timeString = _formatTimeOfDay(new DateTime(2020, 12, 1, value.hour, value.minute));
+        })
+      });
   }
 
   @override
@@ -107,12 +113,26 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'The alarm will ring at:',
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.alarm,
+                    color: Colors.blueAccent,
+                    size: 30.0
+                  )
+                ]
             ),
             Text(
               '$_timeString',
-              style: Theme.of(context).textTheme.headline4,
+              style: TextStyle(
+                  color: Colors.indigoAccent,
+                  fontSize: 64,
+                  fontWeight: FontWeight.w700),
+            ),
+            Text(
+              'Karma score: ',
+              style: Theme.of(context).textTheme.headline5,
             ),
           ],
         ),
@@ -125,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  String _formatTimeOfDay(TimeOfDay timeOfDay) {
-    return timeOfDay.toString();
+  String _formatTimeOfDay(DateTime timeOfDay) {
+    return DateFormat("HH:mm").format(timeOfDay);
   }
 }
